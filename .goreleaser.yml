@@ -1,0 +1,48 @@
+version: 2
+
+project_name: coastguard
+
+builds:
+  - main: ./cmd/coastguard
+    binary: coastguard
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+      - linux
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+      - -X github.com/coastguard/cli/internal/version.Version={{ .Version }}
+      - -X github.com/coastguard/cli/internal/version.Commit={{ .ShortCommit }}
+      - -X github.com/coastguard/cli/internal/version.Date={{ .Date }}
+
+archives:
+  - formats:
+      - binary
+    name_template: "coastguard-{{ .Os }}-{{ .Arch }}"
+
+checksum:
+  name_template: checksums.txt
+
+release:
+  github:
+    owner: jsx-tool
+    name: coastguard-cli
+
+brews:
+  - repository:
+      owner: jsx-tool
+      name: homebrew-coastguard-test
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+    directory: Formula
+    name: coastguard
+    homepage: "https://coasts.dev"
+    description: "Coastguard CLI — manage your coasts.dev projects"
+    install: |
+      bin.install "coastguard"
+    test: |
+      assert_match "coastguard", shell_output("#{bin}/coastguard --version")
+    commit_msg_template: "chore: update coastguard formula to {{ .Tag }}"
