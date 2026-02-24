@@ -1,0 +1,52 @@
+name: CLI Update Policy
+
+on:
+  workflow_dispatch:
+    inputs:
+      policy:
+        description: 'Update policy'
+        required: true
+        type: choice
+        options:
+          - nudge
+          - required
+          - auto
+      minimum_version:
+        description: 'Minimum CLI version (e.g. 0.2.0)'
+        required: true
+        type: string
+      message:
+        description: 'Optional message shown to users'
+        required: false
+        type: string
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  update-policy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Write policy JSON
+        run: |
+          cat > cli-update-policy.json <<EOF
+          {
+            "policy": "${{ inputs.policy }}",
+            "minimum_version": "${{ inputs.minimum_version }}",
+            "message": "${{ inputs.message }}"
+          }
+          EOF
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add cli-update-policy.json
+          git diff --cached --quiet && echo "No changes" && exit 0
+          git commit -m "chore: update CLI update policy to ${{ inputs.policy }} (min ${{ inputs.minimum_version }})"
+          git push

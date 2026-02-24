@@ -72,7 +72,7 @@ func ghToken() string {
 }
 
 func newChecker() *update.Checker {
-	c := update.NewChecker("jsx-tool", "coastguard-platform")
+	c := update.NewChecker("jsx-tool", "coast-cli")
 	c.Token = ghToken()
 	return c
 }
@@ -131,7 +131,7 @@ func policyPreRun(cmd *cobra.Command, _ []string) error {
 	ctx := cmd.Context()
 	token := ghToken()
 
-	policy, err := update.FetchPolicy(ctx, "jsx-tool", "coastguard-platform", "main", token, nil)
+	policy, err := update.FetchPolicy(ctx, "jsx-tool", "coast-cli", "main", token, nil)
 	if err != nil {
 		return nil // fail open
 	}
