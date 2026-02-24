@@ -42,7 +42,7 @@ brews:
     homepage: "https://coasts.dev"
     description: "Coastguard CLI — manage your coasts.dev projects"
     install: |
-      bin.install "coastguard"
+      bin.install Dir["coastguard*"].first => "coastguard"
     test: |
       assert_match "coastguard", shell_output("#{bin}/coastguard --version")
     commit_msg_template: "chore: update coastguard formula to {{ .Tag }}"
